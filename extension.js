@@ -15,7 +15,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
 
-const UNFOCUSED_OPACITY = 128; // 0...255
+const UNFOCUSED_OPACITY = 168; // 0...255
 
 const TaskButton = GObject.registerClass(
 class TaskButton extends PanelMenu.Button {
@@ -29,7 +29,6 @@ class TaskButton extends PanelMenu.Button {
 
         this._updateApp();
         this._updateFocus();
-        this._updateTitle();
         this._updateVisibility();
 
         this._id = 'task-button-' + this._window;
@@ -48,7 +47,6 @@ class TaskButton extends PanelMenu.Button {
 
         this._window.connectObject(
             'notify::appears-focused', this._updateFocus.bind(this),
-            'notify::title', this._updateTitle.bind(this),
             'notify::wm-class', this._updateApp.bind(this), GObject.ConnectFlags.AFTER,
             'notify::gtk-application-id', this._updateApp.bind(this), GObject.ConnectFlags.AFTER,
             'notify::skip-taskbar', this._updateVisibility.bind(this),
@@ -76,9 +74,6 @@ class TaskButton extends PanelMenu.Button {
         this._icon.set_icon_size(Main.panel.height / 2);
         this._icon.set_fallback_gicon(null);
         this._box.add_child(this._icon);
-
-        this._label = new St.Label({y_align: Clutter.ActorAlign.CENTER});
-        this._box.add_child(this._label);
 
         this.add_child(this._box);
 
@@ -128,9 +123,6 @@ class TaskButton extends PanelMenu.Button {
             this._box.set_opacity(UNFOCUSED_OPACITY);
     }
 
-    _updateTitle() {
-        this._label.set_text(this._window?.get_title());
-    }
 
     _updateApp() {
         this._app = Shell.WindowTracker.get_default().get_window_app(this._window);
